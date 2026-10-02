@@ -4,7 +4,7 @@ int main()
 {
 	// i was here - olof
 	// Open the supplied video file.
-	cv::VideoCapture video("resources/camera_test.mp4");
+	cv::VideoCapture video("resources/camera_test.mp4"); // Hugo was here
 	if (!video.isOpened()) {
 		std::cerr << "Could not open the video.\n";
 		return 1;

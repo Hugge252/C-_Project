@@ -2,6 +2,7 @@
 #include <opencv2/opencv.hpp>
 int main()
 {
+	// i was here - olof
 	// Open the supplied video file.
 	cv::VideoCapture video("resources/camera_test.mp4");
 	if (!video.isOpened()) {

@@ -5,7 +5,6 @@ int main()
 	// githubCommitCheck
 	// Open the supplied video file.
 	cv::VideoCapture video("resources/camera_test.mp4");
-
 	if (!video.isOpened()) {
 		std::cerr << "Could not open the video.\n";
 		return 1;

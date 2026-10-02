@@ -361,3 +361,36 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+## ---------------------------------------------------------------------------
+## CMake / vcpkg / C++ additions (not covered by the template above)
+## ---------------------------------------------------------------------------
+
+# CMake out-of-source build directory (the template above only ignores
+# Debug/, Release/, bin/, obj/ — not a generic "build" folder)
+build/
+out/build/
+
+# CMake generated/cache files, in case a build ever happens in-source
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
+
+# vcpkg (only needed if vcpkg ever ends up cloned inside the repo, or you
+# switch to manifest mode, which creates vcpkg_installed/ under build/)
+vcpkg_installed/
+vcpkg/
+
+# Compiled binaries (the .NET template above doesn't cover native C++ output)
+*.exe
+*.dll
+*.lib
+*.exp
+
+# VS Code (only relevant if teammates use VS Code instead of/alongside VS)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json

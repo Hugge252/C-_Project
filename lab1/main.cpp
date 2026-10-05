@@ -1,15 +1,18 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/geometry.hpp>
-
+#include "lab1/MarkerRecognition.cpp"
 int main()
 {
+	
 	// Open the supplied video file.
-	cv::VideoCapture video("resources/camera_test_fixed.mp4");
+	cv::VideoCapture video("resources/camera_test.mp4");
 	if (!video.isOpened()) {
 		std::cerr << "Could not open the video.\n";
 		return 1;
 	}
+
+	MarkerRecon markerRecognition;
 	cv::Mat frame;
 	cv::Mat gray;
 	cv::Mat binary;
@@ -48,6 +51,8 @@ int main()
 		cv::findContours(binary, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
 
 		cv::Mat contourImage = frame.clone();
+
+		//cv::Mat markerRecon = markerRecognition.markerRecognition(frame);
 
 		//Check each detected contour.
 		for(const auto& contour : contours)
@@ -106,6 +111,8 @@ int main()
 		if (cv::waitKey(20) == 27) {
 			break;
 		}
+
+		
 	}
 	return 0;
 }

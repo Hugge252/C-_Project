@@ -3,6 +3,7 @@
 int main()
 {
 	// githubCommitCheck
+	//Check Jens
 	// Open the supplied video file.
 	cv::VideoCapture video("resources/camera_test.mp4");
 	if (!video.isOpened()) {

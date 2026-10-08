@@ -1,32 +1,67 @@
-#include <opencv2/opencv.hpp>
-#include <opencv2/aruco.hpp>
-#include <iostream>
-#include <opencv2/objdetect/aruco_detector.hpp>
-class MarkerRecon
-{
-public:
+
+#include "MarkerRecognition.h"
 
 
-	std::vector<int> markerIds; //ID of the markers
-	std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandodates; // List of the detected corners, rejected and accepted
+
+
+
 	
-	cv::Mat markerRecognition(const cv::Mat& inputImage) {
-		detector.detectMarkers(inputImage, markerCorners, markerIds);
+cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, float markerLegnth) {
 
-		cv::Mat outputImage = inputImage.clone();
-		if (!markerIds.empty())
-			cv::aruco::drawDetectedMarkers(outputImage, markerCorners, markerIds);
-		return outputImage;
-			
-		
+	
+	//hittar hörnen, id samt rejected markers från videon
+	detector.detectMarkers(inputImage, markerCorners, markerIds, rejectedCandidates);
+
+	//Används för debugging
+	std::cout << "Antal markers: "
+		<< markerIds.size()
+		<< std::endl;
+
+	std::cout << "Markers: "
+		<< markerIds.size()
+		<< std::endl;
+
+	std::cout << "Rejected: "
+		<< rejectedCandidates.size()
+		<< std::endl;
+
+	std::cout << "Image: "
+		<< inputImage.cols
+		<< " x "
+		<< inputImage.rows
+		<< std::endl;
+
+	for (size_t i = 0; i < markerIds.size(); i++)
+	{
+		std::cout << "Marker ID: "
+			<< markerIds[i]
+			<< std::endl;
 	}
 
-	cv::Mat outputImage = inputImage.clone();
-	cv::aruco::drawDetectedMarkers(outputImage, markerCorners, markerIds);
+
+	cv::Mat output = inputImage.clone();
+
+	//Om det finns id:s, rita ut hörnen, ids samt färg
+	if (!markerIds.empty()) {
+
+		cv::aruco::drawDetectedMarkers(
+			output,
+			markerCorners,
+			markerIds,
+			cv::Scalar(0, 255, 0)
+		);
+	}
+
+	return output;
+	
+
+}
 
 
-private:
-	cv::aruco::DetectorParameters detectorParams;
-	cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
-	cv::aruco::ArucoDetector detector{ dictionary, detectorParams };
-};
+	
+
+
+	/*cv::Mat outputImage = inputImage.clone();
+	cv::aruco::drawDetectedMarkers(outputImage, markerCorners, markerIds);*/
+
+

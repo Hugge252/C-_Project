@@ -4,6 +4,9 @@
     <ClCompile Include="C:\Users\hugoa\source\repos\C-_Project\lab1\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\hugoa\source\repos\C-_Project\lab1\MarkerRecognition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\hugoa\source\repos\C-_Project\lab1\CMakeLists.txt" />

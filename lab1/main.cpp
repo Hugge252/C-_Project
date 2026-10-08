@@ -1,7 +1,6 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <opencv2/geometry.hpp>
-#include "lab1/MarkerRecognition.cpp"
+#include "MarkerRecognition.h"
 int main()
 {
 	
@@ -12,7 +11,8 @@ int main()
 		return 1;
 	}
 
-	MarkerRecon markerRecognition;
+
+	MarkerRecognition markerRecognition;
 	cv::Mat frame;
 	cv::Mat gray;
 	cv::Mat binary;
@@ -50,8 +50,10 @@ int main()
 		//Find contours in the binary image, including nested contours
 		cv::findContours(binary, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
 
-		cv::Mat contourImage = frame.clone();
 
+		cv::Mat contourImage = frame.clone();
+		cv::Mat markers = markerRecognition.markerRecognition(frame, 0.05f);
+		
 		//cv::Mat markerRecon = markerRecognition.markerRecognition(frame);
 
 		//Check each detected contour.
@@ -103,12 +105,17 @@ int main()
 		}
 
 
+
+
+
 		//cv::drawContours(contourImage, contours, -1, cv::Scalar(blueValue, greenValue, redValue));
 
-		cv::imshow("OpenCV video test", contourImage);
+        cv::imshow("Markers", markers);
+		//cv::imshow("OpenCV video test", contourImage);
 
+		
 		// Wait briefly; Escape closes the program.
-		if (cv::waitKey(20) == 27) {
+		if (cv::waitKey(20) == 27) 
 			break;
 		}
 

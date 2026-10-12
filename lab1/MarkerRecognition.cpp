@@ -1,9 +1,5 @@
 
-#include "MarkerRecognition.h"
-
-
-
-
+#include "MarkerRecognition.hpp"
 
 	
 cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, float markerLegnth) {

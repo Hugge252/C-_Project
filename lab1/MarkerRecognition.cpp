@@ -1,9 +1,13 @@
 
+<<<<<<< HEAD
 #include "MarkerRecognition.h"
 
 
 
 
+=======
+#include "MarkerRecognition.hpp"
+>>>>>>> jens-branch
 
 	
 cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, float markerLegnth) {

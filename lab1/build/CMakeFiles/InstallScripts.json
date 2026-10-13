@@ -1,7 +1,11 @@
 {
 	"InstallScripts" : 
 	[
+<<<<<<< HEAD
 		"C:/Users/hugoa/source/repos/C-_Project/lab1/build/cmake_install.cmake"
+=======
+		"/Users/jens/Desktop/cpppro/Namnlo\u0308s/lab1/build/cmake_install.cmake"
+>>>>>>> jens-branch
 	],
 	"Parallel" : false
 }

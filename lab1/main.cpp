@@ -1,5 +1,6 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
+<<<<<<< HEAD
 #include "MarkerRecognition.h"
 int main()
 {
@@ -16,37 +17,43 @@ int main()
 	cv::Mat frame;
 	cv::Mat gray;
 	cv::Mat binary;
+=======
+#include "CandidateDetector.hpp"
+#include "MarkerRecognition.hpp"
+int main()
+{
+    // Open the supplied video file
+    cv::VideoCapture video("resources/camera_test_fixed.mp4");
+>>>>>>> jens-branch
 
-	//Values
-	int thresholdValue = 128;
-	int maxValue = 255;
+    if (!video.isOpened())
+    {
+        std::cerr << "Could not open the video.\n";
+        return 1;
+    }
 
-	//Green color för accepted candidates
-	int blueValue = 0;
-	int greenValue = 255;
-	int redValue = 0;
+    // Create candidate detector
+    CandidateDetector detector;
 
-	//Red color for rejected candidates
-	int rejectedBlueValue = 0;
-	int rejectedGreenValue = 0;	
-	int rejectedRedValue = 255;
+    cv::Mat frame;
 
-	//Values used to filter contour candidates
-	double minContourArea = 500;
-	double epsilonFactor = 0.02;
-	double minAspectRatio = 0.8;
-	double maxAspectRatio = 1.2;
+    // Read and process one frame at a time
+    while (video.read(frame))
+    {
+        // Detect and draw marker candidates
+        cv::Mat contourImage = detector.detect(frame);
 
-	//Store all contours found in the binary image.
-	std::vector<std::vector<cv::Point>> contours;
+        // Display the processed frame
+        cv::imshow("OpenCV video test", contourImage);
 
-	// Read and display one frame at a time.
-	while (video.read(frame)) 
-	{
-		//Convert the fram to grayscale and then to a binary image
-		cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
-		cv::threshold(gray, binary, thresholdValue, maxValue, cv::THRESH_BINARY);
+        // Escape closes the program
+        if (cv::waitKey(20) == 27)
+        {
+            break;
+        }
+    }
 
+<<<<<<< HEAD
 		//Find contours in the binary image, including nested contours
 		cv::findContours(binary, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
 
@@ -122,4 +129,7 @@ int main()
 		
 	}
 	return 0;
+=======
+    return 0;
+>>>>>>> jens-branch
 }

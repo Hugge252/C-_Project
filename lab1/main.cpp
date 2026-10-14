@@ -16,6 +16,8 @@ int main()
     // Create candidate detector
     CandidateDetector detector;
 
+    
+
     cv::Mat frame;
 
     // Read and process one frame at a time

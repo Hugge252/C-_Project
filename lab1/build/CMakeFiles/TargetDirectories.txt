@@ -1,3 +1,0 @@
-/Users/jens/Desktop/cpppro/Namnlös/lab1/build/CMakeFiles/camera_grab.dir
-/Users/jens/Desktop/cpppro/Namnlös/lab1/build/CMakeFiles/edit_cache.dir
-/Users/jens/Desktop/cpppro/Namnlös/lab1/build/CMakeFiles/rebuild_cache.dir

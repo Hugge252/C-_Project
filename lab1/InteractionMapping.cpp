@@ -2,26 +2,10 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/types.hpp>
 #include "InteractionMapping.hpp"
+    
 
-//Get input in form of marker rotation/corner positions. Convert into an output of a rotation and coordinates usable in Unity.
-//Decide on what size the marker is meant to be to allow camera movement around marker while the object in Unity seems to keep its position.
-    
-    
-    /*//Translate given positions into positions that may fit in Unity. may not be needed:
-    private std::vector<cv::Point2f> getPositionsForUnity(const std::vector<cv::Point2f>* corners){
-        std::vector<cv::Point2f> markerPositions;
-            
-        //Loop through values and adjust each one.
-        for (size_t i = 0; i < positions.size(); i++){
-            markerPositions.push_back(inUnityScale * positions[i]);//Calculate new values for each position.
-            std::cout << positions[i] << " to " << markerPositions[i] << std::endl;//Terminal output for testing.
-        }
-    
-        return markerPositions;
-    }*/
-    
     //Find current rotation of marker using corners and return rotation in degrees (0-360):
-int InteractionMapping::getRotation(const std::vector<cv::Point2f> corners, const cv::Point2f topLeft){
+    int InteractionMapping::getRotation(const std::vector<cv::Point2f>& corners, const cv::Point2f& topLeft){
     if(corners.size() > 4){
         return currentAngle;
     }

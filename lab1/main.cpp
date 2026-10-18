@@ -53,7 +53,7 @@ int main()
 
 
 		cv::Mat contourImage = frame.clone();
-		cv::Mat markers = markerRecognition.markerRecognition(frame, 0.05f);
+		cv::Mat markers = markerRecognition.markerRecognition(frame);
 		
 		//cv::Mat markerRecon = markerRecognition.markerRecognition(frame);
 

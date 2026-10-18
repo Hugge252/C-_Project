@@ -20,10 +20,7 @@ public:
 
 private:
 
-	cv::QRCodeDetectorAruco qr;
-	double angel;
-	double scale;
-	cv::Point2f center;
+	
 
 	cv::aruco::DetectorParameters detectorParams;
 	cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);

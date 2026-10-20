@@ -30,11 +30,12 @@ int main()
         cv::imshow("OpenCV video test", contourImage);
         cv::imshow("Marker Recognition", markers);
 
-        if (cv::waitKey(20) == 27)
-        {
-            break;
-        }
-    }
+		
+		// Wait briefly; Escape closes the program.
+		if (cv::waitKey(20) == 27) 
+			break;
+	}
 
-    return 0;
+	return 0;
 }
+	

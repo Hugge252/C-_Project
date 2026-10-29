@@ -3,7 +3,7 @@
 #include  <iostream>
 
 	
-cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage) {
+cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, float s) {
 
 	
 	//hittar hörnen, id samt rejected markers från videon
@@ -40,7 +40,8 @@ cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage) {
 
 	
 	
-	float s = 1.0f;
+	//float s = 1.0f;
+	// line ovan läggs som kommentar, fås från main
 	// The 4 corners of each of the markers
 	const std::vector<cv::Point3f> objectPoints = {
 

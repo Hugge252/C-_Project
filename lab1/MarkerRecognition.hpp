@@ -16,11 +16,13 @@ public:
 
 	cv::Mat markerRecognition(const cv::Mat& inputImage, float markerLegnth);
 
+	const std::vector<int>& getMarkerIds() const { return markerIds; }
+	const std::vector<cv::Vec3d>& getMarkerRotations() const { return markerRotations; }
 
 
 private:
 
-	
+	std::vector<cv::Vec3d> markerRotations;
 
 	cv::aruco::DetectorParameters detectorParams;
 	cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);

@@ -17,6 +17,13 @@ int main()
 
     CandidateDetector detector;
     MarkerRecognition markerRecognition;
+    
+    //Test
+    /*
+    cv::Mat emptyImage;
+    std::cout <<"Testing empty image.." << std::endl;
+    markerRecognition.markerRecognition(emptyImage, 0.05f);
+    std::cout <<"Test completed!" <<std::endl;*/
 
     cv::Mat frame;
 

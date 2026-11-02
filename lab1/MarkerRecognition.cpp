@@ -3,7 +3,20 @@
 #include  <iostream>
 
 	
-cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, float markerLegnth) {
+cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, float markerLegnth) 
+{
+
+	//Check if the inpit image is empty
+	if(inputImage.empty())
+	{
+		std::cerr << "Error: Input image is empty!" << std::endl;
+
+		markerIds.clear();
+		markerCorners.clear();
+		rejectedCandidates.clear();
+
+		return cv::Mat();
+	}
 
 	
 	//hittar hörnen, id samt rejected markers från videon

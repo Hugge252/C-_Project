@@ -29,7 +29,7 @@ int main()
     while (video.read(frame))
     {
 
-        // Detect and draw marker candidates
+        // Detect and draw marker candidates 
         cv::Mat contourImage = detector.detect(frame);
 
         cv::Mat markers = markerRecognition.markerRecognition(frame, 0.05f);

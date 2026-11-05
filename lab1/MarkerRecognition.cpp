@@ -3,7 +3,7 @@
 #include  <iostream>
 
 	
-cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage) {
+cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, float s) {
 
 	
 	//hittar hörnen, id samt rejected markers från videon
@@ -40,7 +40,8 @@ cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage) {
 
 	
 	
-	float s = 1.0f;
+	//float s = 1.0f;
+	// line ovan läggs som kommentar, fås från main
 	// The 4 corners of each of the markers
 	const std::vector<cv::Point3f> objectPoints = {
 
@@ -68,7 +69,9 @@ cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage) {
 	//detects the corner/s, id:s and rejected canditades from output(clone of the input)
 	 detector.detectMarkers(output, markerCorners, markerIds, rejectedCandidates);
 	
-	 
+
+	 //tömmer förra frame rotation
+	 markerRotations.clear();
 
 	//Draws the detected corner/s, ids 
 	if (!markerIds.empty()) {
@@ -92,9 +95,13 @@ cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage) {
 		//Loops through the corners
 		for (size_t i = 0; i < markerCorners.size(); i++)
 		{
+
 			cv::Vec3d midpoint, rotation; //
 			//Calculate midpoint and rotation of the markers
 			cv::solvePnP(objectPoints, markerCorners[i], cameraMatrix,distCoeffs, rotation, midpoint, false, cv::SOLVEPNP_IPPE_SQUARE);
+			
+			markerRotations.push_back(rotation);
+			
 			//draw the midpoint and rotation from the cameraMatrix 
 			cv::drawFrameAxes(output, cameraMatrix, distCoeffs, rotation, midpoint, s * 0.5f);
 

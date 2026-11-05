@@ -1,0 +1,11 @@
+group No: ?
+group name: Kaffekopparna
+Members: Olof Jönsson, Jens Rosencrantz, Hugo Andersson, Oskar Skeppstedt
+https://github.com/Hugge252/C-_Project
+https://github.com/OspokeOrSomething/C-UnityRepo
+final tag: ?
+assessed commit hash: d615122d8ef02f821efce15521ad87987abe8323
+main interaction: our object in Unity matches the rotation of a marker, with or without slant
+Required equipment or software: 
+Known limitations:
+Presentation date and time: 11:00, 06-11-2026 

@@ -8,7 +8,10 @@
 int main()
 {
     // Open the supplied video file
-    cv::VideoCapture video("resources/camera_test_fixed.mp4");
+    //cv::VideoCapture video("resources/camera_test_fixed.mp4");
+
+    //open webcam instead
+    cv::VideoCapture video(0, cv::CAP_DSHOW);
 
     if (!video.isOpened())
     {

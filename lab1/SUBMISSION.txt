@@ -4,7 +4,7 @@ Members: Olof Jönsson, Jens Rosencrantz, Hugo Andersson, Oskar Skeppstedt
 https://github.com/Hugge252/C-_Project
 https://github.com/OspokeOrSomething/C-UnityRepo
 final tag: ?
-assessed commit hash: d615122d8ef02f821efce15521ad87987abe8323
+assessed commit hash: b7837def409818c3b3a89b89813cffb7541ea6ed
 main interaction: our object in Unity matches the rotation of a marker, with or without slant
 Required equipment or software: 
 Known limitations:

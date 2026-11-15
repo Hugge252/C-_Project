@@ -1,6 +1,7 @@
 
 #include "MarkerRecognition.hpp"
 #include  <iostream>
+#include <list>
 
 	
 cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage) {
@@ -98,7 +99,9 @@ cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage) {
 			//draw the midpoint and rotation from the cameraMatrix 
 			cv::drawFrameAxes(output, cameraMatrix, distCoeffs, rotation, midpoint, s * 0.5f);
 
+			
 		}
+		
 		
 	}
 	
@@ -108,6 +111,55 @@ cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage) {
 	return output;
 	
 
+}
+
+cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, double lightningThreshold, cv::Mat& cameraIntrinsics, const std::vector<cv::Mat>& knownMarkerPatters) {
+	//binarise the image
+	cv::Mat binaryImage = binarise(inputImage, lightningThreshold);
+	//A matris with each pixels connected area
+	cv::Mat labels;
+	
+	int components = cv::connectedComponents(binaryImage, labels);  //The total of connections
+	std::list<cv::Mat> recognisedMarkers; //A empty list of the markers
+
+	//loop through all the components in order to find the contours
+	for (int i = 1; i < components; i++) {
+		cv::Mat component; //Stores the seperate components
+
+		//Compare and extracts each component frpm labels whith index, compares eqaul
+		cv::compare(labels, i, component, cv::CMP_EQ);
+
+		std::vector<std::vector<cv::Point>> contoures; //Stores all the  contoures in a 2D vector of points
+		std::vector<cv::Vec4i> hierarchy; //Stores the hieararchy
+		 cv::findContours(component, contoures, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_NONE); //finds the contours from components and store data in hirearchy and contoure
+
+		cv::Mat boundryLines; //Stores the edges
+		cv::Canny(component, boundryLines, 50, 200); //detects the edges of the contoures
+		std::vector<cv::Vec4i> lines; //stores the lines in a vec with 4 dimension
+		cv::HoughLinesP(boundryLines, lines,1, CV_PI / 180, 5, 10, 250); //Finds the lines
+		
+		//if the lines doesnt form a rectangle, continue to the next component
+		if (lines.size() != 4)
+			continue;
+	}
+
+	return recognisedMarkers;
+	
+}
+
+cv::Mat MarkerRecognition::binarise(const cv::Mat& inputImage, double lightningThreshold) {
+	cv::Mat binaryImage;
+	cv::Mat greyImage;
+	//Convertrs the image to grey in order to calculate threshold
+	cv::cvtColor(inputImage, greyImage, cv::COLOR_BGR2GRAY);
+	//The method biniraise the input imgae from inputImage, threshold, value for the pixels and binary threshold
+	cv::threshold(greyImage, binaryImage, lightningThreshold, 225, cv::THRESH_BINARY);
+
+	return binaryImage;
+}
+
+MarkerRecognition::locateLineIntersect(const std::vector<cv::Vec4i> lines) {
+	
 }
 
 

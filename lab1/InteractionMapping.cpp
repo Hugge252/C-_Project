@@ -42,6 +42,7 @@
     //Calculate atan2 of vector, gives rotation (in radians between -pi and pi)
     float angle = std::atan2f(vectorAToB.y, vectorAToB.x);
     
+    
     //Convert rotation to degrees between 0 and 360:
     //multiply by 180/pi (approximation) to convert to degrees
     angle *= 57.296;

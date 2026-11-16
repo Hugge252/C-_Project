@@ -2,6 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include "CandidateDetector.hpp"
 #include "MarkerRecognition.hpp"
+#include "InteractionMapping.hpp"
 
 
 int main()
@@ -17,6 +18,7 @@ int main()
 
     CandidateDetector detector;
     MarkerRecognition markerRecognition;
+    InteractionMapping interactionMapping;
 
     cv::Mat frame;
 
@@ -26,9 +28,11 @@ int main()
         cv::Mat contourImage = detector.detect(frame);
 
         cv::Mat markers = markerRecognition.markerRecognition(frame, 0.05f);
+        //cv::Mat rotation = interactionMapping(markers, 4);
 
         cv::imshow("OpenCV video test", contourImage);
         cv::imshow("Marker Recognition", markers);
+        //cv::imshow("Marker Recognition", rotation);
 
 		
 		// Wait briefly; Escape closes the program.

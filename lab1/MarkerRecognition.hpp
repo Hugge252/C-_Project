@@ -14,7 +14,10 @@ public:
 	std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandidates;
 	
 
-	cv::Mat markerRecognition(const cv::Mat& inputImage, float markerLegnth);
+	//cv::Mat markerRecognition(const cv::Mat& inputImage, float markerLegnth);
+	cv::Mat markerRecognition(const cv::Mat& inputImage, double lightningThreshold, cv::Mat& cameraIntrinsics, const std::vector<cv::Mat>& knownMarkerPatters);
+	cv::Mat binarise(const cv::Mat& inputImage, double lightningTHreshold);
+	cv::Point2f locateLineIntersect(const std::vector<cv::Vec4i> lines);
 
 
 
@@ -27,10 +30,10 @@ private:
 	//std::vector<cv::Point> contour;
 	//std::vector<cv::Vec4f> boundryLines;
 
-	cv::aruco::DetectorParameters detectorParams;
+	/*cv::aruco::DetectorParameters detectorParams;
 	cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
 	cv::aruco::ArucoDetector detector{ dictionary, detectorParams };
 	cv::Mat cameraMatrix;
 	cv::Mat distCoeffs;
-	
+	*/
 };

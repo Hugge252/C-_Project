@@ -7,6 +7,6 @@ class CandidateDetector
 {
     public:
 
-    std::vector<std::vector<cv::Point>> candidateCorners;
+    std::vector<std::vector<cv::Point2f>> candidateCorners;
      cv::Mat detect (const cv::Mat& frame);
 };

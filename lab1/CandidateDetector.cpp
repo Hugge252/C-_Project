@@ -1,8 +1,8 @@
 #include "CandidateDetector.hpp"
-#include <opencv2/geometry.hpp>
 
 cv::Mat CandidateDetector::detect(const cv::Mat& frame)
 {
+    candidateCorners.clear();
     cv::Mat gray;
     cv::Mat binary;
 
@@ -66,6 +66,21 @@ cv::Mat CandidateDetector::detect(const cv::Mat& frame)
 
                 if (aspectRatio >= minAspectRatio && aspectRatio <= maxAspectRatio)
                 {
+                    std::vector<cv::Point2f> corners;
+
+                    //add the corners to a seperate vector and converts the point from Point to Point2f
+                    for (const auto& corner : approximate) {
+                        corners.emplace_back(
+                            static_cast<float>(corner.x),
+                            static_cast<float>(corner.y)
+
+
+                        );
+                    }
+
+                    candidateCorners.push_back(corners); //Adds the corners to candidateCorners in order to acsess the conres in markerRecognitoin method
+
+                    
                     std::vector<std::vector<cv::Point>> filteredContour = {contour};
 
                     cv::drawContours(contourImage, filteredContour, -1,

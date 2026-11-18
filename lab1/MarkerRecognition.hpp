@@ -1,5 +1,7 @@
 #pragma once
 #include <opencv2/opencv.hpp>
+#include <list>
+#include <CandidateDetector.hpp>
 //#include <opencv2/aruco.hpp>
 //#include <iostream>
 //#include <opencv2/objdetect/aruco_detector.hpp>
@@ -10,14 +12,16 @@ class MarkerRecognition {
 public:
 
 
-	std::vector<int> markerIds; //ID of the markers
-	std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandidates;
+	//std::vector<int> markerIds; //ID of the markers
+	//std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandidates;
 	
 
 	//cv::Mat markerRecognition(const cv::Mat& inputImage, float markerLegnth);
-	cv::Mat markerRecognition(const cv::Mat& inputImage, double lightningThreshold, cv::Mat& cameraIntrinsics, const std::vector<cv::Mat>& knownMarkerPatters);
+	cv::Mat markerRecognition(const cv::Mat& inputImage, double lightningThreshold, cv::Mat& cameraIntrinsics,  std::vector<cv::Mat>& knownMarkerPatters, CandidateDetector& detector);
 	cv::Mat binarise(const cv::Mat& inputImage, double lightningTHreshold);
-	cv::Point2f locateLineIntersect(const std::vector<cv::Vec4i> lines);
+	std::vector<std::vector<cv::Point2f>> locateLineIntersect(const std::vector<cv::Vec4i> lines);
+	std::vector<cv::Mat> normalize( std::vector<std::vector<cv::Point2f>>& refinedCorners, const cv::Mat& inputImage);
+	std::vector < std::pair < cv::Mat, int>>  matchWithKnownMarkers(const std::vector<cv::Mat> normPatterns, const std::vector<cv::Mat>& knownMarkerPatters);
 
 
 

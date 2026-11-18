@@ -27,11 +27,14 @@ int main()
         // Detect and draw marker candidates
         cv::Mat contourImage = detector.detect(frame);
 
-        cv::Mat markers = markerRecognition.markerRecognition(frame, 0.05f);
+        double lightningThreshold;
+        cv::Mat cameraIntrinsics;
+        std::vector<cv::Mat> knownMarkers;
+        cv::Mat markers = markerRecognition.markerRecognition(frame, 0.05f, cameraIntrinsics, knownMarkers, detector);
         //cv::Mat rotation = interactionMapping(markers, 4);
 
         cv::imshow("OpenCV video test", contourImage);
-        cv::imshow("Marker Recognition", markers);
+       //cv::imshow("Marker Recognition", markers);
         //cv::imshow("Marker Recognition", rotation);
 
         if (cv::waitKey(20) == 27)

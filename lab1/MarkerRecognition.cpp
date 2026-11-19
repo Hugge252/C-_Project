@@ -168,13 +168,12 @@ cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, double l
 		knownMarkerPatters.push_back(pattern);
 
 	auto idMarkers = matchWithKnownMarkers(normilizedPattern, knownMarkerPatters);
-	cv::Mat idMat;
+	
+	
 	//auto id;
-	for (const auto& marker : idMarkers) {
-		idMat = marker.first;
-		//id = marker.second;
-		
-	}
+	
+
+	
 		
 	//cv::imshow("ID", idMat);
 	//std::cout << "ID" std::cout << id
@@ -230,8 +229,8 @@ cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, double l
 
 std::vector<cv::Mat> MarkerRecognition::normalize( std::vector<std::vector<cv::Point2f>>& corners, const cv::Mat& inputImage) {
 	
-	std::vector<cv::Point2f> srcPoints;
-	std::vector<cv::Point2f> dstPoints;
+	std::vector<cv::Point2f> srcPoints; //Source points
+	std::vector<cv::Point2f> dstPoints; //destination points 
 	std::vector<cv::Mat> dst;
 
 	//The dest points 
@@ -270,29 +269,72 @@ std::vector<cv::Mat> MarkerRecognition::normalize( std::vector<std::vector<cv::P
 	return dst;
 }
 
-std::vector < std::pair < cv::Mat, int>> MarkerRecognition::matchWithKnownMarkers(const std::vector<cv::Mat> normPatterns, const std::vector<cv::Mat>& knownMarkerPatters) {
+std::vector<MarkerRecognition::Marker>  MarkerRecognition::matchWithKnownMarkers(const std::vector<cv::Mat> normPatterns, const std::vector<cv::Mat>& knownMarkerPatters) {
 	
-	std::vector < std::pair < cv::Mat, int>> identifiedMarker;
+	std::vector<Marker> identifiedMarker; //Stores each marker with a id
 
+	
 	for (int i = 0; i < normPatterns.size(); i++) {
-		auto comparePattern = normPatterns[i];
-		double distance = INFINITY;
-		int bestId = -1;
+		auto comparePattern = normPatterns[i]; //the marker to compare to find a match
+		double distance = INFINITY; //Distance start at infinity
+		int bestId = -1; //id for each marker
+		double orientation;
+		double size;
+
+		cv::Mat rotate90;
+		cv::Mat rotate180;
+		cv::Mat rotate270;
+		std::vector<cv::Mat> rotations;
+
+		cv::rotate(comparePattern, rotate90, cv::ROTATE_90_CLOCKWISE);
+		cv::rotate(comparePattern, rotate180, cv::ROTATE_180);
+		cv::rotate(comparePattern, rotate270, cv::ROTATE_90_COUNTERCLOCKWISE);
+
+		//auto dist = cv::norm(comparePattern, knownMarkerPatters[j], cv::NORM_L1); //Calc the difference between 2 patterns
+		//auto distRotate90 = cv::norm(rotate90, knownMarkerPatters[j], cv::NORM_L1); //Calc the difference between 2 patterns
+		//auto distRotate180 = cv::norm(rotate180, knownMarkerPatters[j], cv::NORM_L1); //Calc the difference between 2 patterns
+		//auto distRotate270 = cv::norm(rotate270, knownMarkerPatters[j], cv::NORM_L1); //Calc the difference between 2 patterns
+
+		rotations.push_back(comparePattern);
+		rotations.push_back(rotate90);
+		rotations.push_back(rotate180);
+		rotations.push_back(rotate270);
 		for (int j = 0; j < knownMarkerPatters.size(); j++) {
 
 			
 
-			auto dist = cv::norm(comparePattern, knownMarkerPatters[j], cv::NORM_L1);
+			for (int k = 0; k < rotations.size(); k++) {
 
-			if (dist < distance) {
-				distance = dist;
-				bestId = j;
-					
+				auto compareRotation = rotations[k];
+				auto dist = cv::norm(compareRotation, knownMarkerPatters[j], cv::NORM_L1);
+
+				if (dist < distance) {
+					distance = dist;
+					bestId = j;
+					orientation = k;
+
+				}
+
+				/*std::cout << "ID: " << j
+					<< " Rotation: " << k
+					<< " Distance: " << dist << std::endl;*/
 			}
-			
+			//if a shorter dist if found, update distanse and save the knownMarkerPaterns id 
+		
 		}
 
-		identifiedMarker.emplace_back(comparePattern, bestId);
+		auto averegaeDistance = distance / (comparePattern.rows * comparePattern.cols);
+
+		double averageDistance = distance /
+			(comparePattern.rows * comparePattern.cols);
+
+		std::cout << "Best ID: " << bestId
+			<< " Orientation: " << orientation
+			<< " Distance: " << distance
+			<< " Average: " << averageDistance
+			<< std::endl;
+
+		identifiedMarker.push_back(Marker{ comparePattern, bestId, orientation, 0.0 });
 	}
 
 	return identifiedMarker;

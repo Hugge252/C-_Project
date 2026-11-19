@@ -33,8 +33,8 @@ int main()
         cv::Mat markers = markerRecognition.markerRecognition(frame, 0.05f, cameraIntrinsics, knownMarkers, detector);
         //cv::Mat rotation = interactionMapping(markers, 4);
 
-        cv::imshow("OpenCV video test", contourImage);
-       //cv::imshow("Marker Recognition", markers);
+        //cv::imshow("OpenCV video test", contourImage);
+       cv::imshow("Marker Recognition", markers);
         //cv::imshow("Marker Recognition", rotation);
 
         if (cv::waitKey(20) == 27)

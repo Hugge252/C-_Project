@@ -15,13 +15,19 @@ public:
 	//std::vector<int> markerIds; //ID of the markers
 	//std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandidates;
 	
+	struct Marker {
+		cv::Mat pattern;
+		int id;
+		double orientation;
+		double size;
+	};
 
 	//cv::Mat markerRecognition(const cv::Mat& inputImage, float markerLegnth);
 	cv::Mat markerRecognition(const cv::Mat& inputImage, double lightningThreshold, cv::Mat& cameraIntrinsics,  std::vector<cv::Mat>& knownMarkerPatters, CandidateDetector& detector);
 	cv::Mat binarise(const cv::Mat& inputImage, double lightningTHreshold);
 	std::vector<std::vector<cv::Point2f>> locateLineIntersect(const std::vector<cv::Vec4i> lines);
 	std::vector<cv::Mat> normalize( std::vector<std::vector<cv::Point2f>>& refinedCorners, const cv::Mat& inputImage);
-	std::vector < std::pair < cv::Mat, int>>  matchWithKnownMarkers(const std::vector<cv::Mat> normPatterns, const std::vector<cv::Mat>& knownMarkerPatters);
+	std::vector<Marker>  matchWithKnownMarkers(const std::vector<cv::Mat> normPatterns, const std::vector<cv::Mat>& knownMarkerPatters);
 
 
 

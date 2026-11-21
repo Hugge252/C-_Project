@@ -16,5 +16,9 @@ add_executable(camera_grab
 )
 
 # Give the program access to OpenCV headers and libraries.
-target_include_directories(camera_grab PRIVATE ${OpenCV_INCLUDE_DIRS})
+target_include_directories(camera_grab PRIVATE 
+${OpenCV_INCLUDE_DIRS}
+${CMAKE_CURRENT_SOURCE_DIR}
+
+)
 target_link_libraries(camera_grab PRIVATE ${OpenCV_LIBS})

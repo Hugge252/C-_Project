@@ -238,8 +238,46 @@ cv::Point2f MarkerRecognition::locateLineIntersect(const std::vector<cv::Vec4i> 
 
 }
 
-
+//Replace matchOrientation and matchSize with correct datatype if needed...
+//matchCorners is two different variables in the pipeline pseudocode...
+//Calculate and return homography matrix, pass corners of detected marker and orientation and size of the matched marker
+cv::mat computeMarkerHomography(
+	const std::vector<cv::Point2f>& refinedCorners, const float& matchOrientation, const float matchSize) {
 	
+		//Using built in cv method, will likely need to be replaced with self made
+		// cv::mat h = cv::findHomography(matchCorners, refinedCorners);
+
+		// return h;
+
+		    vector<Point2f> corners1, corners2;
+    bool found1 = cv::findChessboardCorners(img1, patternSize, corners1);
+    bool found2 = cv::findChessboardCorners(img2, patternSize, corners2);
+ 
+    if (!found1 || !found2)
+    {
+        cout << "Error, cannot find the chessboard corners in both images." << endl;
+        return;
+    }
+ 
+    vector<Point3f> objectPoints;
+    cv::calcChessboardCorners(patternSize, squareSize, objectPoints);
+ 
+    FileStorage fs( samples::findFile( intrinsicsPath ), FileStorage::READ);
+    Mat cameraMatrix, distCoeffs;
+    fs["camera_matrix"] >> cameraMatrix;
+    fs["distortion_coefficients"] >> distCoeffs;
+ 
+    Mat rvec1, tvec1;
+    solvePnP(objectPoints, corners1, cameraMatrix, distCoeffs, rvec1, tvec1);
+    Mat rvec2, tvec2;
+    solvePnP(objectPoints, corners2, cameraMatrix, distCoeffs, rvec2, tvec2);
+}
+
+
+cv::mat recoverCameraTransformation(const cv::mat& homography, const cv::mat& cameraIntrinsics) {
+	
+	
+}
 
 
 	/*cv::Mat outputImage = inputImage.clone();

@@ -18,7 +18,7 @@ public:
 	cv::Mat markerRecognition(const cv::Mat& inputImage, double lightningThreshold, cv::Mat& cameraIntrinsics, const std::vector<cv::Mat>& knownMarkerPatters);
 	cv::Mat binarise(const cv::Mat& inputImage, double lightningTHreshold);
 	cv::Point2f locateLineIntersect(const std::vector<cv::Vec4i> lines);
-
+	cv::mat computeMarkerHomography(const std::vector<cv::Point2f> refinedCorners, const float matchOrientation, const float matchSize);
 
 
 private:

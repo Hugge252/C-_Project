@@ -36,6 +36,7 @@ public:
 	std::vector<Marker>  matchWithKnownMarkers(const std::vector<cv::Mat> normPatterns, const Dictionary& knownMarkerPatters);
 	std::vector<cv::Mat> decode(const std::vector<cv::Mat>& normilizedMarkers, const Dictionary& dict);
 	Dictionary initDictionary(const cv::Mat& inputImage, const CandidateDetector& detector ,int markerRows, int markerCols);
+	cv::Mat computeMarkerHomography(const cv::Mat& inputImage, const std::vector<cv::Point2f>& refinedCorners, const Marker& markerMatch);
 
 
 

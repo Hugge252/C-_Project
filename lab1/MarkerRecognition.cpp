@@ -563,19 +563,18 @@ std::vector<std::vector<cv::Point2f>> MarkerRecognition::locateLineIntersect(con
 }
 
 //Replace matchOrientation and matchSize with correct datatype if needed...
-//matchCorners is two different variables in the pipeline pseudocode...
 //Calculate and return homography matrix, pass corners of detected marker and orientation and size of the matched marker
-cv::mat computeMarkerHomography(
-	const std::vector<cv::Point2f>& refinedCorners, const float& matchOrientation, const float matchSize) {
+cv::Mat computeMarkerHomography(
+	const cv::Mat& inputImage, const std::vector<cv::Point2f>& refinedCorners, const Marker& markerMatch) {
 	
-		//Using built in cv method, will likely need to be replaced with self made
-		// cv::mat h = cv::findHomography(matchCorners, refinedCorners);
+	//markerMatch.orientation
+	//markerMatch.size
 
-		// return h;
-
-		    vector<Point2f> corners1, corners2;
-    bool found1 = cv::findChessboardCorners(img1, patternSize, corners1);
-    bool found2 = cv::findChessboardCorners(img2, patternSize, corners2);
+	//img1 should be the camera view, img2 should be marker pattern.
+	//May need to use different function.
+	vector<Point2f> corners1, corners2;
+    bool found1 = cv::findChessboardCorners(img1, markerMatch.size, corners1);
+    bool found2 = cv::findChessboardCorners(markerMatch.pattern, markerMatch.size, corners2);
  
     if (!found1 || !found2)
     {
@@ -583,22 +582,33 @@ cv::mat computeMarkerHomography(
         return;
     }
  
-    vector<Point3f> objectPoints;
+    std::vector<cv::Point3f> objectPoints;
     cv::calcChessboardCorners(patternSize, squareSize, objectPoints);
  
-    FileStorage fs( samples::findFile( intrinsicsPath ), FileStorage::READ);
-    Mat cameraMatrix, distCoeffs;
-    fs["camera_matrix"] >> cameraMatrix;
-    fs["distortion_coefficients"] >> distCoeffs;
+    cv::Mat cameraMatrix, distCoeffs;
  
-    Mat rvec1, tvec1;
-    solvePnP(objectPoints, corners1, cameraMatrix, distCoeffs, rvec1, tvec1);
-    Mat rvec2, tvec2;
-    solvePnP(objectPoints, corners2, cameraMatrix, distCoeffs, rvec2, tvec2);
+    cv::Mat rvec1, tvec1;
+    cv::solvePnP(objectPoints, corners1, cameraMatrix, distCoeffs, rvec1, tvec1);
+    cv::Mat rvec2, tvec2;
+    cv::solvePnP(objectPoints, corners2, cameraMatrix, distCoeffs, rvec2, tvec2);
+
+
+	cv::Mat R_1to2 = rvec1 * rvec1.t();
+    tvec_1to2 = rvec2 * (-rvec2.t() * tvec1) + tvec2;
+
+	cv::Mat normal = (Mat_<double>(3,1) << 0, 0, 1);
+    cv::Mat normal1 = rvec1 * normal;
+
+	cv::Mat origin(3, 1, CV_64F, Scalar(0));
+    cv::Mat origin1 = R1*origin + tvec1;
+    double d_inv1 = 1.0 / normal1.dot(origin1);
+
+	cv::Mat homography = R_1to2 + d_inv1 * tvec_1to2*normal.t();
+    return homography;
 }
 
 
-cv::mat recoverCameraTransformation(const cv::mat& homography, const cv::mat& cameraIntrinsics) {
+cv::Mat recoverCameraTransformation(const cv::mat& homography, const cv::mat& cameraIntrinsics) {
 	
 	
 }

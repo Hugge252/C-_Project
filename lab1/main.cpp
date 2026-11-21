@@ -22,15 +22,21 @@ int main()
 
     cv::Mat frame;
 
+    
+
+    
+
     while (video.read(frame))
     {
         // Detect and draw marker candidates
         cv::Mat contourImage = detector.detect(frame);
+        auto dict = markerRecognition.initDictionary(frame, detector, 4, 4);
 
         double lightningThreshold;
         cv::Mat cameraIntrinsics;
-        std::vector<cv::Mat> knownMarkers;
-        cv::Mat markers = markerRecognition.markerRecognition(frame, 0.05f, cameraIntrinsics, knownMarkers, detector);
+        
+
+        cv::Mat markers = markerRecognition.markerRecognition(frame, 0.05f, cameraIntrinsics, dict, detector);
         //cv::Mat rotation = interactionMapping(markers, 4);
 
         //cv::imshow("OpenCV video test", contourImage);

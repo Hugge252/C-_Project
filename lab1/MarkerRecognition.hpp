@@ -22,12 +22,21 @@ public:
 		double size;
 	};
 
+	struct Dictionary {
+		std::vector<Marker> markers;
+		int markerRows;
+		int markerCols;
+	};
+
 	//cv::Mat markerRecognition(const cv::Mat& inputImage, float markerLegnth);
-	cv::Mat markerRecognition(const cv::Mat& inputImage, double lightningThreshold, cv::Mat& cameraIntrinsics,  std::vector<cv::Mat>& knownMarkerPatters, CandidateDetector& detector);
+	cv::Mat markerRecognition(const cv::Mat& inputImage, double lightningThreshold, cv::Mat& cameraIntrinsics, const Dictionary& knownMarkerPatters, CandidateDetector& detector);
 	cv::Mat binarise(const cv::Mat& inputImage, double lightningTHreshold);
 	std::vector<std::vector<cv::Point2f>> locateLineIntersect(const std::vector<cv::Vec4i> lines);
 	std::vector<cv::Mat> normalize( std::vector<std::vector<cv::Point2f>>& refinedCorners, const cv::Mat& inputImage);
-	std::vector<Marker>  matchWithKnownMarkers(const std::vector<cv::Mat> normPatterns, const std::vector<cv::Mat>& knownMarkerPatters);
+	std::vector<Marker>  matchWithKnownMarkers(const std::vector<cv::Mat> normPatterns, const Dictionary& knownMarkerPatters);
+	std::vector<cv::Mat> decode(const std::vector<cv::Mat>& normilizedMarkers, const Dictionary& dict);
+	Dictionary initDictionary(const cv::Mat& inputImage, const CandidateDetector& detector ,int markerRows, int markerCols);
+
 
 
 

@@ -115,7 +115,7 @@
 //
 //}
 
-cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, double lightningThreshold, cv::Mat& cameraIntrinsics,  std::vector<cv::Mat>& knownMarkerPatters, CandidateDetector& detector) {
+cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, double lightningThreshold, cv::Mat& cameraIntrinsics, const Dictionary& knownMarkerPatters, CandidateDetector& detector) {
 	//binarise the image
 	std::cout << "New Marekr method running" << std::endl;
 	//cv::Mat binaryImage = binarise(inputImage, lightningThreshold);
@@ -163,11 +163,13 @@ cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, double l
 	}
 
 	auto normilizedPattern = normalize(corners, inputImage);
-	//Stores the normilized patterns for future compareisong and ID
-	for (const auto& pattern : normilizedPattern)
-		knownMarkerPatters.push_back(pattern);
 
-	auto idMarkers = matchWithKnownMarkers(normilizedPattern, knownMarkerPatters);
+	auto decodeMarker = decode(normilizedPattern, knownMarkerPatters);
+
+	//Stores the normilized patterns for future compareisong and ID
+	
+
+	auto idMarkers = matchWithKnownMarkers(decodeMarker, knownMarkerPatters);
 	
 	
 	//auto id;
@@ -269,7 +271,7 @@ std::vector<cv::Mat> MarkerRecognition::normalize( std::vector<std::vector<cv::P
 	return dst;
 }
 
-std::vector<MarkerRecognition::Marker>  MarkerRecognition::matchWithKnownMarkers(const std::vector<cv::Mat> normPatterns, const std::vector<cv::Mat>& knownMarkerPatters) {
+std::vector<MarkerRecognition::Marker>  MarkerRecognition::matchWithKnownMarkers(const std::vector<cv::Mat> normPatterns, const Dictionary& knownMarkerPatters) {
 	
 	std::vector<Marker> identifiedMarker; //Stores each marker with a id
 
@@ -299,18 +301,20 @@ std::vector<MarkerRecognition::Marker>  MarkerRecognition::matchWithKnownMarkers
 		rotations.push_back(rotate90);
 		rotations.push_back(rotate180);
 		rotations.push_back(rotate270);
-		for (int j = 0; j < knownMarkerPatters.size(); j++) {
+		for (const auto& marker:knownMarkerPatters.markers) {
 
 			
 
 			for (int k = 0; k < rotations.size(); k++) {
 
 				auto compareRotation = rotations[k];
-				auto dist = cv::norm(compareRotation, knownMarkerPatters[j], cv::NORM_L1);
+				//hamming distance represent amount of pixels the 2 markers difference from eachother 
+				//Compares decodee markers at a specific roattions with reference markers 
+				auto hammingDistance = cv::norm(compareRotation, marker.pattern, cv::NORM_L1); 
 
-				if (dist < distance) {
-					distance = dist;
-					bestId = j;
+				if (hammingDistance < distance) {
+					distance = hammingDistance;
+					bestId = marker.id;
 					orientation = k;
 
 				}
@@ -323,7 +327,6 @@ std::vector<MarkerRecognition::Marker>  MarkerRecognition::matchWithKnownMarkers
 		
 		}
 
-		auto averegaeDistance = distance / (comparePattern.rows * comparePattern.cols);
 
 		double averageDistance = distance /
 			(comparePattern.rows * comparePattern.cols);
@@ -339,6 +342,84 @@ std::vector<MarkerRecognition::Marker>  MarkerRecognition::matchWithKnownMarkers
 
 	return identifiedMarker;
 
+}
+
+std::vector<cv::Mat> MarkerRecognition::decode(const std::vector<cv::Mat>& normilizedMarker, const MarkerRecognition::Dictionary& dict) {
+
+	std::vector<cv::Mat> decodeMarker;
+
+	for (const auto& marker : normilizedMarker) {
+
+		cv::Mat grey;
+		cv::cvtColor(marker, grey, cv::COLOR_BGR2GRAY);
+
+		cv::Mat matris(dict.markerRows, dict.markerCols, CV_8UC1);
+
+		//Calculate pixelsize, +2 for border
+		auto cellsize = 200 / (dict.markerRows + 2);
+
+		for (int i = 0; i < dict.markerRows; i++) {
+			for (int j = 0; j < dict.markerCols; j++) {
+
+				auto x = (j + 1) * cellsize + (cellsize / 2);
+				auto y = (i + 1) * cellsize + (cellsize / 2);
+
+				uchar pixelValue = grey.at<uchar>(y, x); //Calculate pixxelvalue for each pixel, using uchar for less memory, 0-255
+
+				if (pixelValue < 128) {
+					matris.at<uchar>(i, j) = 0;
+				}
+				else
+					matris.at<uchar>(i, j) = 1;
+				
+			}
+		}
+
+		decodeMarker.push_back(matris);
+	}
+
+	return decodeMarker;
+
+}
+
+MarkerRecognition::Dictionary MarkerRecognition::initDictionary(const cv::Mat& inputImage, const CandidateDetector& detector,int markerRows, int markerCols) {
+	
+	Dictionary dict;
+	dict.markerRows = markerRows;
+	dict.markerCols = markerCols;
+	auto corners = detector.candidateCorners;
+
+	
+
+	cv::Mat greyScaleImage;
+
+	cv::cvtColor(inputImage, greyScaleImage, cv::COLOR_BGR2GRAY);
+
+	for (const auto& point : corners) {
+		cv::cornerSubPix(
+			greyScaleImage, //Need grey image to analyze light shifts
+			point, //Saves the refinde corners in the same vektor
+			cv::Size(5, 5), //Determed the area to work with
+			cv::Size(-1, -1), //Area to ignore, -1,-1 means ingore nothin
+			//Break condition. Uses both precision and max itterations. Max 40 itterations and end when changes becomes small
+			cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 40, 0.001)
+
+		);
+
+
+	}
+
+	
+
+	auto normilizedReference = normalize(corners, inputImage);
+
+	auto decoded = decode(normilizedReference, dict);
+
+	for (int i = 0; i < decoded.size(); i++) {
+		dict.markers.push_back(Marker{ decoded[i], i, 0, 0 });
+	}
+
+	return dict;
 }
 
 cv::Mat MarkerRecognition::binarise(const cv::Mat& inputImage, double lightningThreshold) {

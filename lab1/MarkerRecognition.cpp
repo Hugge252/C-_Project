@@ -571,9 +571,62 @@ std::vector<std::vector<cv::Point2f>> MarkerRecognition::locateLineIntersect(con
 
 }
 
-
+//Replace matchOrientation and matchSize with correct datatype if needed...
+//Calculate and return homography matrix, pass corners of detected marker and orientation and size of the matched marker
+cv::Mat computeMarkerHomography(
+	const cv::Mat& inputImage, const std::vector<cv::Point2f>& refinedCorners, const Marker& markerMatch,
+	cv::Mat& cameraIntrinsic, cv::Mat& cameraView) {
 	
+	//markerMatch.orientation
+	//markerMatch.size
 
+	//May need to use different function.
+	vector<Point2f> corners1, corners2;
+	
+    bool found1 = cv::findChessboardCorners(cameraView, markerMatch.size, corners1);
+    bool found2 = cv::findChessboardCorners(markerMatch.pattern, markerMatch.size, corners2);
+ 
+    if (!found1 || !found2)
+    {
+        cout << "Error, cannot find the chessboard corners in both images." << endl;
+        return;
+    }
+ 
+    std::vector<cv::Point3f> objectPoints;
+    cv::calcChessboardCorners(patternSize, squareSize, objectPoints);//Unknown function, likely not built into openCV.
+ 
+    cv::Mat distCoeffs;
+ 
+    cv::Mat rvec1, tvec1;
+    cv::solvePnP(objectPoints, corners1, cameraIntrinsic, distCoeffs, rvec1, tvec1);
+    cv::Mat rvec2, tvec2;
+    cv::solvePnP(objectPoints, corners2, cameraIntrinsic, distCoeffs, rvec2, tvec2);
+
+
+	cv::Mat R_1to2 = rvec1 * rvec1.t();
+    tvec_1to2 = rvec2 * (-rvec2.t() * tvec1) + tvec2;
+
+	cv::Mat normal = (Mat_<double>(3,1) << 0, 0, 1);
+    cv::Mat normal1 = rvec1 * normal;
+
+	cv::Mat origin(3, 1, CV_64F, Scalar(0));
+    cv::Mat origin1 = R1*origin + tvec1;
+    double d_inv1 = 1.0 / normal1.dot(origin1);
+
+	cv::Mat homography = R_1to2 + d_inv1 * tvec_1to2*normal.t();
+    return homography;
+}
+
+
+cv::Mat recoverCameraTransformation(const cv::Mat& homography, const cv::Mat& cameraIntrinsics) {
+	
+	
+}
+
+cv::Mat optimiseTransformation(const cv::Mat& initialPose, cv::Mat& refinedCorners, cv::Mat& cameraIntrinsics) {
+
+
+}
 
 	/*cv::Mat outputImage = inputImage.clone();
 	cv::aruco::drawDetectedMarkers(outputImage, markerCorners, markerIds);*/

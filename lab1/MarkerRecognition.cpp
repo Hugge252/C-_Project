@@ -565,15 +565,16 @@ std::vector<std::vector<cv::Point2f>> MarkerRecognition::locateLineIntersect(con
 //Replace matchOrientation and matchSize with correct datatype if needed...
 //Calculate and return homography matrix, pass corners of detected marker and orientation and size of the matched marker
 cv::Mat computeMarkerHomography(
-	const cv::Mat& inputImage, const std::vector<cv::Point2f>& refinedCorners, const Marker& markerMatch) {
+	const cv::Mat& inputImage, const std::vector<cv::Point2f>& refinedCorners, const Marker& markerMatch,
+	cv::Mat& cameraIntrinsic, cv::Mat& cameraView) {
 	
 	//markerMatch.orientation
 	//markerMatch.size
 
-	//img1 should be the camera view, img2 should be marker pattern.
 	//May need to use different function.
 	vector<Point2f> corners1, corners2;
-    bool found1 = cv::findChessboardCorners(img1, markerMatch.size, corners1);
+	
+    bool found1 = cv::findChessboardCorners(cameraView, markerMatch.size, corners1);
     bool found2 = cv::findChessboardCorners(markerMatch.pattern, markerMatch.size, corners2);
  
     if (!found1 || !found2)
@@ -583,14 +584,14 @@ cv::Mat computeMarkerHomography(
     }
  
     std::vector<cv::Point3f> objectPoints;
-    cv::calcChessboardCorners(patternSize, squareSize, objectPoints);
+    cv::calcChessboardCorners(patternSize, squareSize, objectPoints);//Unknown function, likely not built into openCV.
  
-    cv::Mat cameraMatrix, distCoeffs;
+    cv::Mat distCoeffs;
  
     cv::Mat rvec1, tvec1;
-    cv::solvePnP(objectPoints, corners1, cameraMatrix, distCoeffs, rvec1, tvec1);
+    cv::solvePnP(objectPoints, corners1, cameraIntrinsic, distCoeffs, rvec1, tvec1);
     cv::Mat rvec2, tvec2;
-    cv::solvePnP(objectPoints, corners2, cameraMatrix, distCoeffs, rvec2, tvec2);
+    cv::solvePnP(objectPoints, corners2, cameraIntrinsic, distCoeffs, rvec2, tvec2);
 
 
 	cv::Mat R_1to2 = rvec1 * rvec1.t();
@@ -608,11 +609,15 @@ cv::Mat computeMarkerHomography(
 }
 
 
-cv::Mat recoverCameraTransformation(const cv::mat& homography, const cv::mat& cameraIntrinsics) {
+cv::Mat recoverCameraTransformation(const cv::Mat& homography, const cv::Mat& cameraIntrinsics) {
 	
 	
 }
 
+cv::Mat optimiseTransformation(const cv::Mat& initialPose, cv::Mat& refinedCorners, cv::Mat& cameraIntrinsics) {
+
+
+}
 
 	/*cv::Mat outputImage = inputImage.clone();
 	cv::aruco::drawDetectedMarkers(outputImage, markerCorners, markerIds);*/

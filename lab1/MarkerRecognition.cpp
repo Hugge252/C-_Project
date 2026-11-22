@@ -429,6 +429,7 @@ MarkerRecognition::Dictionary MarkerRecognition::initDictionary(const cv::Mat& i
 	return dict;
 }
 
+//Not being used !!!
 cv::Mat MarkerRecognition::binarise(const cv::Mat& inputImage, double lightningThreshold) {
 	cv::Mat binaryImage;
 	cv::Mat greyImage;
@@ -440,6 +441,7 @@ cv::Mat MarkerRecognition::binarise(const cv::Mat& inputImage, double lightningT
 	return binaryImage;
 }
 
+//Not being used!!!
 std::vector<std::vector<cv::Point2f>> MarkerRecognition::locateLineIntersect(const std::vector<cv::Vec4i> lines) {
 
 	std::vector<cv::Point2f> intersectingPoints; //Stores all the intersecting points

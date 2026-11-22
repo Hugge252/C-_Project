@@ -117,7 +117,7 @@
 
 cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, double lightningThreshold, cv::Mat& cameraIntrinsics, const Dictionary& knownMarkerPatters, CandidateDetector& detector) {
 	//binarise the image
-	std::cout << "New Marekr method running" << std::endl;
+	//std::cout << "New Marekr method running" << std::endl;
 	//cv::Mat binaryImage = binarise(inputImage, lightningThreshold);
 	////A matris with each pixels connected area
 	//cv::Mat labels;
@@ -312,12 +312,17 @@ std::vector<MarkerRecognition::Marker>  MarkerRecognition::matchWithKnownMarkers
 				//Compares decodee markers at a specific roattions with reference markers 
 				auto hammingDistance = cv::norm(compareRotation, marker.pattern, cv::NORM_L1); 
 
+				if (hammingDistance >= 3)
+					continue;
+
 				if (hammingDistance < distance) {
 					distance = hammingDistance;
 					bestId = marker.id;
 					orientation = k;
 
 				}
+
+				
 
 				/*std::cout << "ID: " << j
 					<< " Rotation: " << k
@@ -348,6 +353,7 @@ std::vector<cv::Mat> MarkerRecognition::decode(const std::vector<cv::Mat>& normi
 
 	std::vector<cv::Mat> decodeMarker;
 
+
 	for (const auto& marker : normilizedMarker) {
 
 		cv::Mat grey;
@@ -363,6 +369,7 @@ std::vector<cv::Mat> MarkerRecognition::decode(const std::vector<cv::Mat>& normi
 
 				auto x = (j + 1) * cellsize + (cellsize / 2);
 				auto y = (i + 1) * cellsize + (cellsize / 2);
+				
 
 				uchar pixelValue = grey.at<uchar>(y, x); //Calculate pixxelvalue for each pixel, using uchar for less memory, 0-255
 

@@ -23,14 +23,25 @@ int main()
     cv::Mat frame;
 
     
+    video.read(frame);
+      cv::Mat framee =  detector.detect(frame);
 
-    
+        
+   
+
+    auto dict = markerRecognition.initDictionary(framee, detector, 4, 4);
+    std::cout << "Markers in dict: " << dict.markers.size() << std::endl;
+
+   /* for (const auto& marker : dict) {
+        std::cout << "Marker ID: " << marker.id
+
+    }*/
+        
 
     while (video.read(frame))
     {
         // Detect and draw marker candidates
         cv::Mat contourImage = detector.detect(frame);
-        auto dict = markerRecognition.initDictionary(frame, detector, 4, 4);
 
         double lightningThreshold;
         cv::Mat cameraIntrinsics;

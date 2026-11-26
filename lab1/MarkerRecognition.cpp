@@ -571,30 +571,30 @@ std::vector<std::vector<cv::Point2f>> MarkerRecognition::locateLineIntersect(con
 
 }
 
-//Replace matchOrientation and matchSize with correct datatype if needed...
-//Calculate and return homography matrix, pass corners of detected marker and orientation and size of the matched marker
+//Calculate and return homography matrix
 cv::Mat computeMarkerHomography(
-	const cv::Mat& inputImage, const std::vector<cv::Point2f>& refinedCorners, const Marker& markerMatch,
-	cv::Mat& cameraIntrinsic, cv::Mat& cameraView) {
-	
-	//markerMatch.orientation
-	//markerMatch.size
+	const cv::Mat& inputImage, const std::vector<cv::Point2f>& refinedCorners,
+	const MarkerRecognition::Marker& markerMatch, cv::Mat& cameraIntrinsic, cv::Mat& cameraView) {
 
-	//May need to use different function.
-	vector<Point2f> corners1, corners2;
-	
-    bool found1 = cv::findChessboardCorners(cameraView, markerMatch.size, corners1);
-    bool found2 = cv::findChessboardCorners(markerMatch.pattern, markerMatch.size, corners2);
+	std::vector<cv::Point2f> corners1, corners2;
+	cv::Size_<double> markerSize(markerMatch.size, markerMatch.size);
+
+    bool found1 = cv::findChessboardCorners(cameraView, markerSize, corners1);
+    bool found2 = cv::findChessboardCorners(markerMatch.pattern, markerSize, corners2);
  
-    if (!found1 || !found2)
-    {
-        cout << "Error, cannot find the chessboard corners in both images." << endl;
-        return;
-    }
+    // if (!found1 || !found2)
+    // {
+    //     std::cout << "Error, cannot find the chessboard corners in both images." << std::endl;
+    //     return ;
+    // }
  
     std::vector<cv::Point3f> objectPoints;
-    cv::calcChessboardCorners(patternSize, squareSize, objectPoints);//Unknown function, likely not built into openCV.
- 
+    
+	for( int i = 0; i < markerSize.height; i++ )
+        for( int j = 0; j < markerSize.width; j++ )
+            objectPoints.push_back(cv::Point3f(float(j*markerSize.height/7), float(i*markerSize.height/7), 0));//Hardcoded int 7 as current marker has a width of 7 squares. May need to change.
+
+
     cv::Mat distCoeffs;
  
     cv::Mat rvec1, tvec1;
@@ -604,28 +604,30 @@ cv::Mat computeMarkerHomography(
 
 
 	cv::Mat R_1to2 = rvec1 * rvec1.t();
-    tvec_1to2 = rvec2 * (-rvec2.t() * tvec1) + tvec2;
+    cv::Mat tvec_1to2 = rvec2 * (-rvec2.t() * tvec1) + tvec2;
 
-	cv::Mat normal = (Mat_<double>(3,1) << 0, 0, 1);
+	cv::Mat normal = (cv::Mat_<double>(3,1) << 0, 0, 1);
     cv::Mat normal1 = rvec1 * normal;
 
-	cv::Mat origin(3, 1, CV_64F, Scalar(0));
-    cv::Mat origin1 = R1*origin + tvec1;
+	cv::Mat origin(3, 1, CV_64F, cv::Scalar(0));
+    cv::Mat origin1 = rvec1*origin + tvec1;
     double d_inv1 = 1.0 / normal1.dot(origin1);
 
 	cv::Mat homography = R_1to2 + d_inv1 * tvec_1to2*normal.t();
+
+	std::cout << "Homography calculated to be " << homography << std::endl;
     return homography;
 }
 
 
-cv::Mat recoverCameraTransformation(const cv::Mat& homography, const cv::Mat& cameraIntrinsics) {
+// cv::Mat recoverCameraTransformation(const cv::Mat& homography, const cv::Mat& cameraIntrinsics) {
 	
 	
-}
+// }
 
 cv::Mat optimiseTransformation(const cv::Mat& initialPose, cv::Mat& refinedCorners, cv::Mat& cameraIntrinsics) {
 
-
+	return initialPose;//Temp
 }
 
 	/*cv::Mat outputImage = inputImage.clone();

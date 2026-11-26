@@ -10,14 +10,15 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#include <cstdint>
-#include <cstring>
-#include <stdexcept>
-#include <string>
-#include <vector>
+#include <cstdint>   // int32_t, uint32_t
+#include <cstring>   // memcpy, memset
+#include <stdexcept> // std::runtime_error
+#include <string>    // std::string
+#include <vector>    // std::vector
 
 class OscSender
 {
+
 public:
     OscSender(const std::string& ip, unsigned short port)
     {

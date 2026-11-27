@@ -1,14 +1,76 @@
+//#include "OscSender.hpp"
+//#include <iostream>
+//#include <opencv2/opencv.hpp>
+//#include "CandidateDetector.hpp"
+//#include "MarkerRecognition.hpp"
+//
+//
+//int main()
+//{
+//    // Open the supplied video file
+//    //cv::VideoCapture video("resources/camera_test_fixed.mp4");
+//
+//    //open webcam instead
+//    cv::VideoCapture video(0, cv::CAP_DSHOW);
+//
+//    if (!video.isOpened())
+//    {
+//        std::cerr << "Could not open the video.\n";
+//        return 1;
+//    }
+//
+//    CandidateDetector detector;
+//    MarkerRecognition markerRecognition;
+//
+//    cv::Mat frame;
+//
+//    //including osc - sending data to unity
+//    OscSender osc("127.0.0.1", 8000);
+//
+//    while (video.read(frame))
+//    {
+//
+//        // Detect and draw marker candidates
+//        cv::Mat contourImage = detector.detect(frame);
+//
+//        cv::Mat markers = markerRecognition.markerRecognition(frame, 0.05f);
+//
+//        cv::imshow("OpenCV video test", contourImage);
+//        cv::imshow("Marker Recognition", markers);
+//
+//        //sending to unity
+//        const auto& rotations = markerRecognition.getMarkerRotations();
+//
+//        if (!rotations.empty())
+//        {
+//            const cv::Vec3d& r = rotations[0];   // first detected marker only, for now
+//            osc.sendFloats("/marker/rotation",
+//                { (float)r[0], (float)r[1], (float)r[2] });
+//        }
+//		
+//		// Wait briefly; Escape closes the program.
+//		if (cv::waitKey(20) == 27) 
+//			break;
+//	}
+//
+//	return 0;
+//}
+//	
+
+#include "OscSender.hpp"
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "CandidateDetector.hpp"
 #include "MarkerRecognition.hpp"
-#include "InteractionMapping.hpp"
 
 
 int main()
 {
     // Open the supplied video file
-    cv::VideoCapture video("resources/camera_test.mp4");
+    //cv::VideoCapture video("resources/camera_test_fixed.mp4");
+
+    //open webcam instead
+    cv::VideoCapture video(0, cv::CAP_DSHOW);
 
     if (!video.isOpened())
     {
@@ -18,52 +80,50 @@ int main()
 
     CandidateDetector detector;
     MarkerRecognition markerRecognition;
-    InteractionMapping interactionMapping;
 
     cv::Mat frame;
 
-<<<<<<< HEAD
-    
     video.read(frame);
-      cv::Mat framee =  detector.detect(frame);
+    cv::Mat framee = detector.detect(frame);
 
-        
-   
+
+
 
     auto dict = markerRecognition.initDictionary(framee, detector, 4, 4);
     std::cout << "Markers in dict: " << dict.markers.size() << std::endl;
 
-   /* for (const auto& marker : dict) {
-        std::cout << "Marker ID: " << marker.id
-
-    }*/
-        
-=======
     //including osc - sending data to unity
     OscSender osc("127.0.0.1", 8000);
->>>>>>> olof
 
     while (video.read(frame))
     {
+
         // Detect and draw marker candidates
         cv::Mat contourImage = detector.detect(frame);
 
-        double lightningThreshold;
-        cv::Mat cameraIntrinsics;
-        
 
-        cv::Mat markers = markerRecognition.markerRecognition(frame, 0.05f, cameraIntrinsics, dict, detector);
-        //cv::Mat rotation = interactionMapping(markers, 4);
+        cv::Mat stuff;
+        cv::Mat markers = markerRecognition.markerRecognition(frame, 0.05f, stuff, dict, detector);
 
-        //cv::imshow("OpenCV video test", contourImage);
-       cv::imshow("Marker Recognition", markers);
-        //cv::imshow("Marker Recognition", rotation);
+        cv::imshow("OpenCV video test", contourImage);
+        cv::imshow("Marker Recognition", markers);
 
-        if (cv::waitKey(20) == 27)
+        //sending to unity
+        const auto& rotations = markerRecognition.getMarkerRotations();
+
+        if (!rotations.empty())
         {
-            break;
+            const cv::Vec3d& r = rotations[0];   // first detected marker only, for now
+            osc.sendFloats("/marker/rotation",
+                { (float)r[0], (float)r[1], (float)r[2] });
         }
+
+        // Wait briefly; Escape closes the program.
+        if (cv::waitKey(20) == 27)
+            break;
     }
 
     return 0;
 }
+
+

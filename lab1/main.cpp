@@ -24,6 +24,7 @@ int main()
 
     cv::Mat frame;
 
+    //including osc - sending data to unity
     OscSender osc("127.0.0.1", 8000);
 
     while (video.read(frame))

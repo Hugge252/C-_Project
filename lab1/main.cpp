@@ -22,6 +22,7 @@ int main()
 
     cv::Mat frame;
 
+<<<<<<< HEAD
     
     video.read(frame);
       cv::Mat framee =  detector.detect(frame);
@@ -37,6 +38,10 @@ int main()
 
     }*/
         
+=======
+    //including osc - sending data to unity
+    OscSender osc("127.0.0.1", 8000);
+>>>>>>> olof
 
     while (video.read(frame))
     {

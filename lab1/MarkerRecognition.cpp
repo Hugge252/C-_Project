@@ -173,9 +173,14 @@ cv::Mat MarkerRecognition::markerRecognition(const cv::Mat& inputImage, double l
 	
 	
 	//auto id;
-	
 
-	
+	for(const auto& marker:idMarkers){
+		cv::Mat homography = computeMarkerHomography(corners[0], marker, cameraIntrinsics);
+		cv::Mat rotationVec = optimiseTransformation(homography, cameraIntrinsics);
+
+	}
+	// if(idMarkers.size() > 0){
+	// }
 		
 	//cv::imshow("ID", idMat);
 	//std::cout << "ID" std::cout << id
@@ -572,50 +577,56 @@ std::vector<std::vector<cv::Point2f>> MarkerRecognition::locateLineIntersect(con
 }
 
 //Calculate and return homography matrix
-cv::Mat computeMarkerHomography(
-	const cv::Mat& inputImage, const std::vector<cv::Point2f>& refinedCorners,
-	const MarkerRecognition::Marker& markerMatch, cv::Mat& cameraIntrinsic, cv::Mat& cameraView) {
+cv::Mat MarkerRecognition::computeMarkerHomography(const std::vector<cv::Point2f>& refinedCorners, const MarkerRecognition::Marker& markerMatch, const cv::Mat& cameraIntrinsic) {
 
-	std::vector<cv::Point2f> corners1, corners2;
-	cv::Size_<double> markerSize(markerMatch.size, markerMatch.size);
+	std::vector<cv::Point3f> corners1, markerCorners;
+	cv::Size_<double> markerSize(28,28);//(markerMatch.size, markerMatch.size);
 
-    bool found1 = cv::findChessboardCorners(cameraView, markerSize, corners1);
-    bool found2 = cv::findChessboardCorners(markerMatch.pattern, markerSize, corners2);
- 
-    // if (!found1 || !found2)
-    // {
-    //     std::cout << "Error, cannot find the chessboard corners in both images." << std::endl;
-    //     return ;
-    // }
- 
-    std::vector<cv::Point3f> objectPoints;
-    
-	for( int i = 0; i < markerSize.height; i++ )
-        for( int j = 0; j < markerSize.width; j++ )
-            objectPoints.push_back(cv::Point3f(float(j*markerSize.height/7), float(i*markerSize.height/7), 0));//Hardcoded int 7 as current marker has a width of 7 squares. May need to change.
+	markerCorners = {cv::Point3f(-markerSize.width/2, markerSize.width/2, 0), cv::Point3f(markerSize.width/2, markerSize.width/2, 0),
+		cv::Point3f(markerSize.width/2, -markerSize.width/2, 0), cv::Point3f(-markerSize.width/2, -markerSize.width/2, 0)};
+
+    //bool found1 = cv::findChessboardCorners(cameraView, markerSize, corners1);
+    //cv::findChessboardCorners(markerMatch.pattern, markerSize, corners2);
+	cv::Mat h = cv::findHomography(markerCorners, refinedCorners);
+
+    // std::vector<cv::Point3f> objectPoints;
+
+	// for( int i = 0; i < markerSize.height; i++ )
+    //     for( int j = 0; j < markerSize.width; j++ )
+    //         objectPoints.push_back(cv::Point3f(float(j*markerSize.height/7), float(i*markerSize.height/7), 0));//Hardcoded int 7 as current marker has a width of 7 squares. May need to change.
+
+	
+
+    // cv::Mat distCoeffs = cv::Mat(1,4, CV_64F, 0.0);
+	
+	// cv::Mat rvec, tvec;
+    // cv::solvePnP(corners2, refinedCorners, cameraIntrinsic, distCoeffs, rvec, tvec, false, cv::SOLVEPNP_IPPE_SQUARE);
+
+	// std::cout << "rvec: \n" << rvec << std::endl;
+    // std::cout << "tvec: \n" << tvec << std::endl;
+
+	cv::Mat homography = h;
+
+    // cv::Mat rvec1, tvec1;
+    // cv::solvePnP(corners2, corners1, cameraIntrinsic, distCoeffs, rvec1, tvec1);
+    // cv::Mat rvec2, tvec2;
+    // cv::solvePnP(corners2, corners2, cameraIntrinsic, distCoeffs, rvec2, tvec2);
+	// std::cout << "bwebhrbjw" << std::endl;
 
 
-    cv::Mat distCoeffs;
- 
-    cv::Mat rvec1, tvec1;
-    cv::solvePnP(objectPoints, corners1, cameraIntrinsic, distCoeffs, rvec1, tvec1);
-    cv::Mat rvec2, tvec2;
-    cv::solvePnP(objectPoints, corners2, cameraIntrinsic, distCoeffs, rvec2, tvec2);
+	// cv::Mat R_1to2 = rvec1 * rvec1.t();
+    // cv::Mat tvec_1to2 = rvec2 * (-rvec2.t() * tvec1) + tvec2;
 
+	// cv::Mat normal = (cv::Mat_<double>(3,1) << 0, 0, 1);
+    // cv::Mat normal1 = rvec1 * normal;
 
-	cv::Mat R_1to2 = rvec1 * rvec1.t();
-    cv::Mat tvec_1to2 = rvec2 * (-rvec2.t() * tvec1) + tvec2;
+	// cv::Mat origin(3, 1, CV_64F, cv::Scalar(0));
+    // cv::Mat origin1 = rvec1*origin + tvec1;
+    // double d_inv1 = 1.0 / normal1.dot(origin1);
 
-	cv::Mat normal = (cv::Mat_<double>(3,1) << 0, 0, 1);
-    cv::Mat normal1 = rvec1 * normal;
+	// cv::Mat homography = R_1to2 + d_inv1 * tvec_1to2*normal.t();
 
-	cv::Mat origin(3, 1, CV_64F, cv::Scalar(0));
-    cv::Mat origin1 = rvec1*origin + tvec1;
-    double d_inv1 = 1.0 / normal1.dot(origin1);
-
-	cv::Mat homography = R_1to2 + d_inv1 * tvec_1to2*normal.t();
-
-	std::cout << "Homography calculated to be " << homography << std::endl;
+	std::cout << "Homography calculated to be \n" << homography << std::endl;
     return homography;
 }
 
@@ -625,9 +636,18 @@ cv::Mat computeMarkerHomography(
 	
 // }
 
-cv::Mat optimiseTransformation(const cv::Mat& initialPose, cv::Mat& refinedCorners, cv::Mat& cameraIntrinsics) {
+cv::Mat MarkerRecognition::optimiseTransformation(const cv::Mat& initialPose, const cv::Mat& cameraIntrinsics) {
 
-	return initialPose;//Temp
+	std::vector<cv::Mat> Rs_decomp, ts_decomp, normals_decomp;
+	cv::Mat cam = (cv::Mat_<double>(3,3) << 1, 0, 1, 0, 1, 1, 0, 0, 1);
+    cv::decomposeHomographyMat(initialPose, cam, Rs_decomp, ts_decomp, normals_decomp);
+	cv::Mat rvec_decomp;
+	cv::Rodrigues(Rs_decomp[0], rvec_decomp);
+	std::cout << "passed \n" << rvec_decomp << std::endl;
+
+	
+
+	return rvec_decomp;
 }
 
 	/*cv::Mat outputImage = inputImage.clone();

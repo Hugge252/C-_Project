@@ -1,9 +1,10 @@
 #pragma once
 
-
+//skips some of the less used APIs from Windows headers
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
+// for networking, socket needed
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
